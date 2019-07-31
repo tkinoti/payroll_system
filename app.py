@@ -35,3 +35,10 @@ def hello_world():
 #--run flask
 # if __name__ == '__main__':
 #     app.run()
+@app.route('/new_department',methods=['POST'])
+def new_department():
+    pass
+
+@app.route('/new_employee',methods=['POST'])
+def new_employee():
+    pass
