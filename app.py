@@ -1,5 +1,5 @@
 #--importing Flask class from flask module
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from config import Development
 
@@ -21,11 +21,16 @@ from models.Departments import DepartmentModel
 def create_tables():
     db.create_all()
 
+@app.route('/employees/<int:dept_id>')
+def employees(dept_id):
+    return render_template('employees.html')
+
 #--registering a route
 @app.route('/')
 #--function to run when clients visit this route
-def hello_world():
-    return render_template('index.html')
+def home():
+    departments = DepartmentModel.fetch_all()
+    return render_template('index.html',idara = departments)
 
 #--creating another route
 # @app.route('/name')
@@ -37,7 +42,17 @@ def hello_world():
 #     app.run()
 @app.route('/new_department',methods=['POST'])
 def new_department():
-    pass
+    department_name = request.form['department']
+    if DepartmentModel.fetch_by_name(department_name):
+        #read more on bootstrap alerts with flash and ensure the message pops up
+        flash('department ' + department_name + ' already exists')
+        return redirect(url_for('home'))
+    department = DepartmentModel(name=department_name)#name is the field name on the database and department is on form in html code
+    department.insert_to_db()
+    return redirect(url_for('home'))
+
+
+
 
 @app.route('/new_employee',methods=['POST'])
 def new_employee():

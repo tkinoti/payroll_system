@@ -5,4 +5,18 @@ class DepartmentModel(db.Model):
     __tablename__ = 'departments'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    employees = db.relationship(EmployeesModel, backref = 'department' )
+    employees = db.relationship(EmployeesModel, backref = 'department')
+
+    #create/insert record (instance method)
+    def insert_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    #read record (class method) - read more on classes
+    @classmethod
+    def fetch_by_name(cls,name):
+        return cls.query.filter_by(name = name).first()
+
+    @classmethod
+    def fetch_all(cls):
+        return cls.query.all()
