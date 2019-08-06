@@ -3,7 +3,7 @@ from app import db
 class EmployeesModel(db.Model):
     __tablename__ = 'employees'
     emp_id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(50), unique=True, nullable=False)
+    full_name = db.Column(db.String(50), nullable=False)
     gender =db.Column(db.String(10), nullable=False)
     kra_pin = db.Column(db.String(20), unique=True)
     email = db.Column(db.String(50), unique=True, nullable=False)
@@ -11,3 +11,7 @@ class EmployeesModel(db.Model):
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))
     basic_sal = db.Column(db.Float, nullable=False)
     benefits = db.Column(db.Float)
+
+    def insert_to_db(self):
+        db.session.add(self)
+        db.session.commit()

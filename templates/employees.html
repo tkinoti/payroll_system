@@ -15,7 +15,7 @@
 
 <!-- Button trigger modal for department -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newemployee">
-    Add new employee
+    Add employee to {{ this_department.name }}
 </button>
 
 
@@ -34,16 +34,16 @@
                 <form action="/new_employee" method="post">
                     <div class="form-group">
                         <label for="formGroupExampleInput">Employee name</label>
-                        <input required type="text" class="form-control" id="formGroupExampleInput"
-                               placeholder="Department name">
+                        <input name="full_name" required type="text" class="form-control" id="formGroupExampleInput"
+                               placeholder="employee name">
                     </div>
-
                     <div class="form-group">
-                        <label for="formGroupExampleInput">Employee name</label>
-                        <input name="name" required type="text" class="form-control" id="formGroupExampleInput"
-                               placeholder="Department name">
+                        <label for="formGroupExampleInput">Gender</label>
+                        <select name="gender" class="form-control" id="formGroupExampleInput">
+                            <option value="na">Not Applicable</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
                     </div>
-
                     <div class="form-group">
                         <label for="formGroupExampleInput">KRA PIN</label>
                         <input name="kra_pin" required type="text" class="form-control" id="formGroupExampleInput"
@@ -60,13 +60,8 @@
                                placeholder="enter national id">
                     </div>
                     <div class="form-group">
-                        <label for="formGroupExampleInput">Department</label>
-                        <select name="departments" required class="form-control">
-                            <option>choose dept</option>
-                            <option>IT</option>
-                            <option>HR</option>
-                            <option>Finance</option>
-                        </select>
+                        <input name="department_id" value="{{ this_department.id }}" class="form-control" type="hidden">
+
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput">Basic Salary</label>
@@ -79,14 +74,8 @@
                                placeholder="benefits if any">
                     </div>
                     <div class="form-group">
-                        <label for="formGroupExampleInput">Benefits</label>
-                        <input required type="number" class="form-control" id="formGroupExampleInput"
-                               placeholder="benefits if any">
-                    </div>
-                    <div class="form-group">
                         <input type="submit" class="form-control btn btn-primary">
                     </div>
-
                 </form>
             </div>
             {#            <div class="modal-footer">#}
@@ -97,6 +86,37 @@
     </div>
 </div>
 
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name of employee</th>
+        <th scope="col">Gender</th>
+        <th scope="col">KRA PIN</th>
+        <th scope="col">email</th>
+        <th scope="col">National ID</th>
+        <th scope="col">Basic Salary</th>
+        <th scope="col">Benefits</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <!-- use a for loop to repeat record. use ginger to code-->
+    {% for each in this_department.employees %}
+        <tr>
+            <th scope="row">{{ each.id }}</th>
+            <td>{{ each.full_name }}</td>
+            <td>{{ each.gender }}</td>
+            <td>{{ each.kra_pin }}</td>
+            <td>{{ each.email }}</td>
+            <td>{{ each.national_id }}</td>
+            <td>{{ each.basic_sal }}</td>
+            <td>{{ each.benefits }}</td>
+            <td><a href="/payroll/{{ each.emp_id }}"> View Payrolls</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 <!--<h1>Home</h1>-->
 

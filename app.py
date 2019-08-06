@@ -23,7 +23,13 @@ def create_tables():
 
 @app.route('/employees/<int:dept_id>')
 def employees(dept_id):
-    return render_template('employees.html')
+    #new_department=DepartmentModel.fetch_all()
+    this_department=DepartmentModel.fetch_by_id(dept_id)
+    employees=this_department.employees
+    #department_id =dept_id
+    #dept = DepartmentModel.fetch_by_id(dept_id)
+    #dept_name = dept.name
+    return render_template('employees.html', this_department=this_department)
 
 #--registering a route
 @app.route('/')
@@ -56,4 +62,19 @@ def new_department():
 
 @app.route('/new_employee',methods=['POST'])
 def new_employee():
-    pass
+    name_of_employee=request.form['full_name']
+    kra_pin=request.form['kra_pin']
+    gender=request.form['gender']
+    national_id=request.form['national_id']
+    email=request.form['email']
+    department_id=int(request.form['department_id'])
+    basic_salary=request.form['basic_sal']
+    benefits=request.form['benefits']
+    emp=EmployeesModel(full_name=name_of_employee,kra_pin=kra_pin,gender=gender, national_id=national_id,email=email,department_id=department_id,
+                       basic_sal=basic_salary,benefits=benefits)
+    emp.insert_to_db()
+    return redirect(url_for('home'))
+
+@app.route('/payroll/<int:emp_id>')
+def payroll(emp_id):
+    return render_template('payroll.html')

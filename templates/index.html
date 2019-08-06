@@ -66,8 +66,8 @@
                 <form action="/new_employee" method="post">
                     <div class="form-group">
                         <label for="formGroupExampleInput">Employee name</label>
-                        <input name="name" required type="text" class="form-control" id="formGroupExampleInput"
-                               placeholder="Department name">
+                        <input name="full_name" required type="text" class="form-control" id="formGroupExampleInput"
+                               placeholder="employee name">
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput">Gender</label>
@@ -93,11 +93,10 @@
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput">Department</label>
-                        <select name="departments" required class="form-control">
-                            <option>choose dept</option>
-                            <option>IT</option>
-                            <option>HR</option>
-                            <option>Finance</option>
+                        <select name="department_id" required class="form-control">
+                            {% for each in idara %}
+                                <option value="{{ each.id }}">{{ each.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
