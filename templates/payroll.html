@@ -31,21 +31,27 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/new_employee" method="post">
+                <form action="/generatepayroll/{{ employee.emp_id }}" method="post">
+                    <div class="form-group">
+                        <label for="formGroupExampleInput">Month</label>
+                        <input name="month" required type="text" class="form-control" id="formGroupExampleInput"
+                               placeholder="Eg Jan2019">
+                    </div>
+
                     <div class="form-group">
                         <label for="formGroupExampleInput">Overtime?</label>
-                        <input name="overtime" required type="text" class="form-control" id="formGroupExampleInput"
+                        <input name="overtime" value="0"required type="number" class="form-control" id="formGroupExampleInput"
                                placeholder="overtime">
                     </div>
 
                     <div class="form-group">
                         <label for="formGroupExampleInput">Any Loan Deductions?</label>
-                        <input name="overtime" value=0 required type="number" class="form-control" id="formGroupExampleInput"
+                        <input name="loan" value=0 required type="number" class="form-control" id="formGroupExampleInput"
                                placeholder="loan deduction">
                     </div>
                     <div class="form-group">
                         <label for="formGroupExampleInput">Salary advance</label>
-                        <input name="email" value = 0 required type="number" class="form-control" id="formGroupExampleInput"
+                        <input name="advance" value = 0 required type="number" class="form-control" id="formGroupExampleInput"
                                placeholder="advance">
                     </div>
 
