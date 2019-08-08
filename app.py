@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from config import Development
 from resources.payroll import Payslip
+import pygal
 
 #--instance of a class - creating an object i.e instantiating class Flask
 app = Flask(__name__)
@@ -38,7 +39,40 @@ def employees(dept_id):
 #--function to run when clients visit this route
 def home():
     departments = DepartmentModel.fetch_all()
-    return render_template('index.html',idara = departments)
+
+    #creating a pie chart in the home page
+    all_employees = EmployeesModel.fetch_all()
+    male = 0
+    female = 0
+    others = 0
+
+    for each in all_employees:
+        if each.gender == 'male':
+            male += 1
+        elif each.gender == 'female':
+            female += 1
+        else:
+            others += 1
+
+    pie_chart = pygal.Pie() # instantiating the pie class
+    pie_chart.title = 'Analysing Company Employees By Gender'
+    pie_chart.add('Male', male)
+    pie_chart.add('Female', female)
+    pie_chart.add('Others', others)
+    chart=pie_chart.render_data_uri()
+
+    # creating a  bar graph in the home page
+    line_chart = pygal.Bar() # instantiating the bar graph class
+    line_chart.title = 'Salary Cost Per Department'
+
+    #loop over departments
+    for each_dept in departments:
+        line_chart.add(each_dept.name, DepartmentModel.fetch_total_payroll_by_id(each_dept.id))
+    bar_graph = line_chart.render_data_uri()
+
+    return render_template('index.html',idara = departments, chart=chart, bar_graph=bar_graph)
+
+
 
 #--creating another route
 # @app.route('/name')
@@ -107,23 +141,13 @@ def payroll(emp_id):
     employee=EmployeesModel.fetch_by_id(emp_id)
     return render_template('payroll.html',employee=employee)
 
-@app.route('/generatepayroll/<int:emp_id>',methods=['POST'])
-def generatepayroll(emp_id):
-    this_employee = EmployeesModel.fetch_by_id(emp_id)
-    salary=Payslip(this_employee.full_name,this_employee.department_id,this_employee.kra_pin, "bank", this_employee.basic_sal,
-                   this_employee.benefits, 2000)
+# @app.route('/generatepayroll/<int:emp_id>',methods=['POST'])
+# def generatepayroll(emp_id):
+#     this_employee = EmployeesModel.fetch_by_id(emp_id)
+#     salary=Payslip(this_employee.full_name,this_employee.department_id,this_employee.kra_pin, "bank", this_employee.basic_sal,
+#                    this_employee.benefits, 2000)
+    # return redirect(url_for('home'))
 
-    # print("Basic", salary.basic_pay)
-    # print("Pension", salary.pension)
-    # print("Gross", salary.gross_pay)
-    # print("Taxable Amount", salary.taxable_amt)
-    # print("NSSF", salary.nssf)
-    # print("NHIF", salary.nhif)
-    # print("PAYE", salary.paye)
-
-
-
-    return redirect(url_for('home'))
 
 @app.route('/deleteemployee/<int:emp_id>')
 def deleteemployee(emp_id):
@@ -131,3 +155,31 @@ def deleteemployee(emp_id):
     this_dept =this_emp.department
     EmployeesModel.delete_by_id(emp_id)
     return redirect(url_for('employees', dept_id=this_dept.id))
+
+#from Keith
+
+@app.route('/generate_payroll/<int:emp_id>', methods=['POST'])
+def generate_payroll(emp_id):
+    this_employee = EmployeeModel.fetch_employee_by_id(emp_id)
+    overtime = request.form['overtime']
+
+    payroll = Payslip(this_employee.full_name, this_employee.basic_salary, this_employee.benefits, float(overtime))
+
+    name = payroll.name
+    month = request.form['month']
+    loan = request.form['loan']
+    salary_advance = request.form['salary_advance']
+    gross_salary =  payroll.gross_salary
+    taxable_income = payroll.taxable_income
+    nssf =  round(payroll.NSSF, 2)
+    paye =  round(payroll.PAYE, 2)
+    personal_relief = payroll.personal_relief
+    tax_net_off_relief =  round(payroll.after_relief, 2)
+    nhif =  payroll.NHIF
+    net_salary =  round(payroll.net_salary, 2)
+    take_home_pay = net_salary - (float(loan)  + float(salary_advance))
+
+    payslip = PayrollModel(full_name=name, month=month, overtime=overtime,loan_deduction=loan, salary_advance=salary_advance, gross_salary=gross_salary, NSSF=nssf, taxable_income=taxable_income, PAYE=paye, personal_relief=personal_relief, tax_net_off_relief=tax_net_off_relief, NHIF=nhif, net_salary=net_salary, take_home_pay=take_home_pay, employee_id=this_employee.id)
+    payslip.insert_to_db()
+    flash('Payslip for ' + this_employee.full_name + ' has been successfully generated', 'success')
+    return redirect(url_for('index'))

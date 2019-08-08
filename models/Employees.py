@@ -24,6 +24,11 @@ class EmployeesModel(db.Model):
     def fetch_by_id(cls, emp_id):
         return cls.query.filter_by(emp_id=emp_id).first()
 
+    #fetching all employees
+    @classmethod
+    def fetch_all(cls):
+        return cls.query.all()
+
     # update
     @classmethod
     def update_by_id(cls, emp_id, full_name=None, gender=None, kra_pin=None, email=None, national_id=None,
